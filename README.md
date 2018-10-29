@@ -1,5 +1,5 @@
 ## Text-based Chess
-This project was done as a final project for C++ Data Structure course.
+This project was my final project for C++ Data Structure course I took in 2016 Spring (I believe).
 
 ## Start
 Clone the repository locally: <br />
