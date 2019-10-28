@@ -1,7 +1,7 @@
 /*
-	Author: Jii Myoi
-	Date: April 29, 2016
-	Specification file for the Stack (LIFO) class
+Author: Jii Myoi
+Date: April 29, 2016
+Specification file for the Stack (LIFO) class
 */
 
 #ifndef STACK_H
@@ -17,20 +17,20 @@ using namespace std;
 #include "Node.h"
 
 class Stack {
-	private:
-		Node *front;
-		Node *lastNode;
-		int items;
+    private:
+        Node *front;
+        Node *lastNode;
+        int items;
 
-	public:
-		Stack( void );  // Constructor
-		~Stack( void ); // Destructor
+    public:
+        Stack( void );  // Constructor
+        ~Stack( void ); // Destructor
 
-		// Member Functions
-		void push_back( string );
-		string pop_back( void );
-		string peek( void );
-		int getItems( void );
+        // Member Functions
+        void push_back( string );
+        string pop_back( void );
+        string peek( void );
+        int getItems( void );
 };
 
 #endif
