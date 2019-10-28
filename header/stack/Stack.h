@@ -1,5 +1,5 @@
 /*
-Author: Jii Myoi
+Author: Jii Yoo
 Date: April 29, 2016
 Specification file for the Stack (LIFO) class
 */
