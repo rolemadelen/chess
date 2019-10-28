@@ -10,7 +10,8 @@ Implementation file for the Stack (LIFO) class
 /**********************************************************************
 *                           Constructor
 **********************************************************************/
-Stack::Stack( void ) {
+Stack::Stack( void ) 
+{
     front = new Node;
     front->from[0]='0';
     front->from[1]='0';
@@ -23,7 +24,8 @@ Stack::Stack( void ) {
 /**********************************************************************
 *                           Destructor
 **********************************************************************/
-Stack::~Stack( void ) {
+Stack::~Stack( void ) 
+{
     lastNode = NULL;
     while (front->ptr!=NULL) 
     {
@@ -42,7 +44,8 @@ Stack::~Stack( void ) {
 * POST-CONDITION: add data at the end of the list
 * PURPOSE       : push Node at the end of the list
 **********************************************************************/
-void Stack::push_back( string move ) {
+void Stack::push_back( string move ) 
+{
     Node *temp = new Node;
     temp->from[0] = move[0];
     temp->from[1] = move[1];
@@ -63,7 +66,8 @@ void Stack::push_back( string move ) {
 * POST-CONDITION: last data is removed
 * PURPOSE       : pop data from the end of the list
 **********************************************************************/
-string Stack::pop_back( void ) {
+string Stack::pop_back( void ) 
+{
     --items;
     string mv;
     mv+= lastNode->from[0];
@@ -97,7 +101,8 @@ string Stack::pop_back( void ) {
 * RETURN        : string
 * PURPOSE       : access the last data w/o modifying the list
 **********************************************************************/
-string Stack::peek( void ) {
+string Stack::peek( void ) 
+{
     string mv = "";
     mv+=lastNode->from[0];
     mv+=lastNode->from[1];
