@@ -46,10 +46,10 @@ Chess::~Chess( void )
 {
     for (int i=0; i<10; ++i)
     {
-        delete cdp_board[i];
+        delete board[i];
     }
-    delete [] cdp_board;
-    cdp_board = NULL;
+    delete [] board;
+    board = NULL;
 
     delete user->st_p1;
     delete user->st_p2;
@@ -68,10 +68,10 @@ void Chess::init( void )
     user->st_p2 = new Computer();
 
     // Allocate memmory to 19x19 charcter array
-    cdp_board = new char*[ROW];
+    board = new char*[ROW];
     for (int i=0; i<ROW; ++i)
     {
-        cdp_board[i] = new char[COL];
+        board[i] = new char[COL];
     }
 
     // Initialize the chess board with blank spaces
@@ -79,7 +79,7 @@ void Chess::init( void )
     {
         for (int j=0; j<COL; ++j) 
         {
-            cdp_board[i][j] = ' ';
+            board[i][j] = ' ';
         }
     }
 
@@ -92,7 +92,7 @@ void Chess::init( void )
             if ((i&1)==1)  
             {
                 if (j!=0 && j!=COL-1)
-                    cdp_board[i][j] = '-';
+                    board[i][j] = '-';
             }
             // if even # row
             else if ((i&0)==0) 
@@ -100,20 +100,20 @@ void Chess::init( void )
                 // in first and lost column, label ranks(1-8)
                 if (i>1 && i<ROW-1 && (j==0 || j==COL-1))
                 {
-                    cdp_board[i][j] = '9'-(i/2);
+                    board[i][j] = '9'-(i/2);
                 }
                 // if odd # col, draw the vertical grid
                 if ((j&1)==1)
                 {
                     if (i!=0 && i!=ROW-1)
                     {
-                        cdp_board[i][j] = '|';
+                        board[i][j] = '|';
                     }
                 }
                 // in first and last row, label flies(a-h)
                 if ((j&1)!=1 && (i==0 || i==ROW-1) && j>1 && j<COL-1)
                 {
-                    cdp_board[i][j] = 'a'+(j/2)-1;
+                    board[i][j] = 'a'+(j/2)-1;
                 }
             } 
         }
@@ -164,11 +164,11 @@ void Chess::makeMove(bool p1)
     t_it it = ((p1)?(user->st_p1->pcs.begin()):(user->st_p2->pcs.begin()));
     while (it!=((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end()))) 
     {
-        if (it->second.first==crg_from[0] && it->second.second==crg_from[1]) 
+        if (it->second.first==move_from[0] && it->second.second==move_from[1]) 
         {
-            it->second.first = crg_to[0];
-            it->second.second = crg_to[1];
-            cdp_board[crg_from[0]][crg_from[1]] = ' ';
+            it->second.first = move_to[0];
+            it->second.second = move_to[1];
+            board[move_from[0]][move_from[1]] = ' ';
             it = ((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end())); 
             return;
         }
@@ -183,25 +183,25 @@ void Chess::makeMove(bool p1)
  **********************************************************************/
 bool Chess::checkMove( bool p1 ) 
 {
-    PieceMove chkMv;
+    PieceMove checkMove;
     // check if p2 selected p1's piece or vice versa
-    char ch = cdp_board[crg_from[0]][crg_from[1]];
+    char ch = board[move_from[0]][move_from[1]];
     if (((p1)?(ch>='a'):(ch<'a'))) 
     {
         cout << "\tERROR: NOT YOUR PIECE.\n";
         return false;
     }
     // check whether piece's move is valid
-    if (!chkMv.fn_validMv(this)) 
+    if (!checkMove.validMove(this)) 
     {
         return false;
     }
     // check for pawn's promotion
-    if (chkMv.fn_getPrmt()!=0) 
+    if (checkMove.getPrmt()!=0) 
     {
         // Pawn Promotion
         char promo = (p1)?'P':'p';
-        switch (chkMv.fn_getPrmt()) 
+        switch (checkMove.getPrmt()) 
         {
             case 1: 
                 promo = ((p1)?'Q':'q'); 
@@ -223,8 +223,8 @@ bool Chess::checkMove( bool p1 )
         t_it it = (p1)?(user->st_p1->pcs.begin()):(user->st_p2->pcs.begin());
         while (it!=((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end()))) 
         {
-            if (it->first==((p1)?'P':'p')&&(it->second.first==crg_from[0]&&
-                        it->second.second==crg_from[1])) 
+            if (it->first==((p1)?'P':'p')&&(it->second.first==move_from[0]&&
+                        it->second.second==move_from[1])) 
             {
                 it->first = promo;
                 it = ((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end()));
@@ -298,19 +298,19 @@ bool Chess::isValid( string &str )
     }
 
     // extract files and ranks from the string
-    crg_from[1] = (tolower(str[0])-'a'+1)*2;
-    crg_from[0] = 18-((str[1]-'0')*2);
-    crg_to[1] = (tolower(str[4])-'a'+1)*2;
-    crg_to[0] = 18-((str[5]-'0')*2);
+    move_from[1] = (tolower(str[0])-'a'+1)*2;
+    move_from[0] = 18-((str[1]-'0')*2);
+    move_to[1] = (tolower(str[4])-'a'+1)*2;
+    move_to[0] = 18-((str[5]-'0')*2);
 
     // check if blank piece was selected
-    if (cdp_board[crg_from[0]][crg_from[1]] == ' ') 
+    if (board[move_from[0]][move_from[1]] == ' ') 
     {
         cout << "\tERROR: YOU GOTTA MOVE SOMETHING?\n";
         return false;	
     }
 
-    //PieceMove chkMv;
+    //PieceMove checkMove;
     switch ((moves.getItems()%2!=0) ? 0 : 1) 
     {
         case 1: 
@@ -437,7 +437,7 @@ void Chess::display( void )
     {
         for (int j=0; j<COL; ++j) 
         {
-            char ch = cdp_board[i][j];
+            char ch = board[i][j];
             // p1->blue, p2->red
             if (ch>='a'&&ch<='z'&&(i!=0&&i!=ROW-1))
             {
@@ -447,7 +447,7 @@ void Chess::display( void )
             {
                 cout << GBLU;
             }
-            cout << cdp_board[i][j] << DEF << ' ';
+            cout << board[i][j] << DEF << ' ';
         } 
         cout << endl;
     }
@@ -462,13 +462,13 @@ void Chess::drawPieces( void )
     t_it it = user->st_p1->pcs.begin();
     while (it!=user->st_p1->pcs.end())
     {
-        cdp_board[it->second.first][it->second.second] = (it++)->first;
+        board[it->second.first][it->second.second] = (it++)->first;
     }
 
     it = user->st_p2->pcs.begin();
     while (it!=user->st_p2->pcs.end())
     {
-        cdp_board[it->second.first][it->second.second] = (it++)->first;
+        board[it->second.first][it->second.second] = (it++)->first;
     }
 }
 

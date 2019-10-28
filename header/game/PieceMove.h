@@ -10,25 +10,24 @@ Secification file for the PieceMove class
 
 class PieceMove{
     private:
-        char ch_piece;
-        short sh_promote;
+        char piece;
+        short promote;
 
         // helper functions
-        bool fn_kingMv(Chess *);
-        bool fn_queenMv(Chess *);
-        bool fn_bshpMv(Chess *);
-        bool fn_knghtMv(Chess *); 
-        bool fn_rookMv(Chess *);
-        bool fn_pawnMv(Chess *);
+        bool kingMove(Chess *);
+        bool queenMove(Chess *);
+        bool bshpMove(Chess *);
+        bool knghtMove(Chess *); 
+        bool rookMove(Chess *);
+        bool pawnMove(Chess *);
 
-        void fn_kill(Chess *, char);
+        void kill(Chess *, char);
     public:
         // Accessor
-        short fn_getPrmt()
-        { return sh_promote; }
+        short getPrmt() { return promote; }
 
         // Member functions
-        bool fn_validMv(Chess *); // check for valid move
+        bool validMove(Chess *); // check for valid move
 };
 
 #endif

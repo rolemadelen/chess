@@ -14,12 +14,12 @@ using namespace std;
 #include "../header/game/Chess.h"
 
 // Symbolic Constants
-#define FROM cp->crg_from
-#define TO   cp->crg_to
-#define isLower cp->cdp_board[TO[0]][TO[1]]>=97 &&\
-                   cp->cdp_board[TO[0]][TO[1]]<=122 
-#define isUpper cp->cdp_board[TO[0]][TO[1]]>=65 &&\
-                   cp->cdp_board[TO[0]][TO[1]]<=90 
+#define FROM cp->move_from
+#define TO   cp->move_to
+#define isLower cp->board[TO[0]][TO[1]]>=97 &&\
+                   cp->board[TO[0]][TO[1]]<=122 
+#define isUpper cp->board[TO[0]][TO[1]]>=65 &&\
+                   cp->board[TO[0]][TO[1]]<=90 
 
 /***********************************************************
 * RETURN    : bool
@@ -27,30 +27,31 @@ using namespace std;
 * PURPOSE   : Determine which piece is moving and 
 *	       return true if the move is valid else false
 ***********************************************************/
-bool PieceMove::fn_validMv(Chess *chess) 
+bool PieceMove::validMove(Chess *chess) 
 {
-    ch_piece = chess->cdp_board[chess->crg_from[0]][chess->crg_from[1]];
-    sh_promote = 0;
+    piece = chess->board[chess->move_from[0]][chess->move_from[1]];
+    promote = 0;
 
-    switch( ch_piece ) {
+    switch (piece) 
+    {
         case 'k': 
         case 'K':
-            return fn_kingMv(chess);
+            return kingMove(chess);
         case 'q':
         case 'Q':
-            return fn_queenMv(chess);
+            return queenMove(chess);
         case 'b': 
         case 'B':
-            return fn_bshpMv(chess);
+            return bshpMove(chess);
         case 'n': 
         case 'N':
-            return fn_knghtMv(chess);
+            return knghtMove(chess);
         case 'r': 
         case 'R':
-            return fn_rookMv(chess);
+            return rookMove(chess);
         case 'p': 
         case 'P':
-            return fn_pawnMv(chess);
+            return pawnMove(chess);
         default:
             return false;
     } 
@@ -64,15 +65,15 @@ bool PieceMove::fn_validMv(Chess *chess)
 * PARAMETER : Chess
 * PURPOSE   : Determine whether pawn's move is valid
 ***********************************************************/
-bool PieceMove::fn_pawnMv(Chess *cp) 
+bool PieceMove::pawnMove(Chess *cp) 
 {
-    switch (ch_piece) 
+    switch (piece) 
     {
         case 'p':	// player 2 || computer
             // starter-> may move 2 places
             if (FROM[0]==4 && FROM[1]==TO[1]               &&
                    (FROM[0]+2==TO[0] || FROM[0]+4==TO[0]) &&
-                   (cp->cdp_board[TO[0]][TO[1]]==' '))
+                   (cp->board[TO[0]][TO[1]]==' '))
             {
                 return true;
             }
@@ -93,7 +94,7 @@ bool PieceMove::fn_pawnMv(Chess *cp)
             // starter-> may move 2 places
             if (FROM[0]==14 && FROM[1]==TO[1]               &&
                     (FROM[0]-2==TO[0] || FROM[0]-4==TO[0]) &&
-                    (cp->cdp_board[TO[0]][TO[1]]==' '))
+                    (cp->board[TO[0]][TO[1]]==' '))
             {
                 return true;
             }
@@ -114,13 +115,13 @@ bool PieceMove::fn_pawnMv(Chess *cp)
     }
 
     // cannot move front: there is something in front
-    if (FROM[1]==TO[1] && cp->cdp_board[TO[0]][TO[1]]!=' ') 
+    if (FROM[1]==TO[1] && cp->board[TO[0]][TO[1]]!=' ') 
     {
         cout << "\tPAWN: CANNOT CAPTURE IN THE SAME DIRECTION ?\n";
         return false;
     }
     // cannot move diagonal: there is no piece to capture
-    else if (cp->cdp_board[TO[0]][TO[1]]==' ' && (FROM[1]!=TO[1])) 
+    else if (cp->board[TO[0]][TO[1]]==' ' && (FROM[1]!=TO[1])) 
     {
         cout << "\tPAWN: TRYING TO CAPTURE SOMETHING?\n";
         return false;
@@ -134,14 +135,14 @@ bool PieceMove::fn_pawnMv(Chess *cp)
         cout << "\t2. Rook\n";
         cout << "\t3. Bishop\n";
         cout << "\t4. Knight\n\t> ";
-        cin >> sh_promote;
+        cin >> promote;
         cin.ignore();
     }
 
     // Captured something?
-    if (cp->cdp_board[TO[0]][TO[1]] != ' ')
+    if (cp->board[TO[0]][TO[1]] != ' ')
     { 
-        fn_kill(cp, cp->cdp_board[TO[0]][TO[1]]);
+        kill(cp, cp->board[TO[0]][TO[1]]);
     }
 
     return true;
@@ -152,7 +153,7 @@ bool PieceMove::fn_pawnMv(Chess *cp)
 * PARAMETER : Chess
 * PURPOSE   : Determine whether king's move is valid
 ***********************************************************/
-bool PieceMove::fn_kingMv(Chess *cp) {
+bool PieceMove::kingMove(Chess *cp) {
     short sh_x = abs(TO[0] - FROM[0]);
     short sh_y = abs(TO[1] - FROM[1]);
     //	absolute valued (x,y) pairs of distance from A to B.
@@ -164,7 +165,7 @@ bool PieceMove::fn_kingMv(Chess *cp) {
         return false;
     }
 
-    switch (ch_piece) 
+    switch (piece) 
     {
         case 'k':
             if (isLower) 
@@ -184,9 +185,9 @@ bool PieceMove::fn_kingMv(Chess *cp) {
     }
 
     // Captured something?
-    if (cp->cdp_board[TO[0]][TO[1]] != ' ')
+    if (cp->board[TO[0]][TO[1]] != ' ')
     {
-        fn_kill(cp, cp->cdp_board[TO[0]][TO[1]]);
+        kill(cp, cp->board[TO[0]][TO[1]]);
     }
 
     // Valid move
@@ -198,7 +199,7 @@ bool PieceMove::fn_kingMv(Chess *cp) {
 * PARAMETER : Chess
 * PURPOSE   : Determine whether queen's move is valid
 ***********************************************************/
-bool PieceMove::fn_queenMv(Chess *cp) 
+bool PieceMove::queenMove(Chess *cp) 
 {
     short sh_x = TO[0] - FROM[0];
     short sh_y = TO[1] - FROM[1];
@@ -227,7 +228,7 @@ bool PieceMove::fn_queenMv(Chess *cp)
     }
 
     // Invalid move: capturing the same team
-    switch (ch_piece)
+    switch (piece)
     {
         case 'q':
             if (isLower) 
@@ -260,7 +261,7 @@ bool PieceMove::fn_queenMv(Chess *cp)
         // check if player's piece is jumping over any pieces
         for (int i=FROM[0]+2; i<=TO[0]-2; i+=2)
         {
-            if (cp->cdp_board[i][FROM[1]]!=' ') 
+            if (cp->board[i][FROM[1]]!=' ') 
             {
                 cout << "\tQUEEN: CANNOT GO THROUGH\n";
                 return false;
@@ -279,7 +280,7 @@ bool PieceMove::fn_queenMv(Chess *cp)
         // check if player's piece is jumping over any pieces
         for(int i=FROM[1]+2; i<=TO[1]-2; i+=2)
         {
-            if(cp->cdp_board[FROM[0]][i]!=' ') 
+            if(cp->board[FROM[0]][i]!=' ') 
             {
                 cout << "\tQUEEN: CANNOT GO THROUGH\n";
                 return false;
@@ -294,7 +295,7 @@ bool PieceMove::fn_queenMv(Chess *cp)
         int temp2 = abs(sh_y)/sh_y;
         for (int i=2; i<=abs(sh_x)-2; i+=2) 
         {
-            if (cp->cdp_board[FROM[0]+(i*temp)][FROM[1]+(i*temp2)]!=' ') 
+            if (cp->board[FROM[0]+(i*temp)][FROM[1]+(i*temp2)]!=' ') 
             {
                 cout << "\tQUEEN: CANNOT GO THROUGH\n";
                 return false;
@@ -313,9 +314,9 @@ bool PieceMove::fn_queenMv(Chess *cp)
     }
 
     // Captured something?
-    if (cp->cdp_board[TO[0]][TO[1]] != ' ')
+    if (cp->board[TO[0]][TO[1]] != ' ')
     {
-        fn_kill(cp, cp->cdp_board[TO[0]][TO[1]]);
+        kill(cp, cp->board[TO[0]][TO[1]]);
     }
 
     return true;
@@ -326,7 +327,7 @@ bool PieceMove::fn_queenMv(Chess *cp)
 * PARAMETER : Chess
 * PURPOSE   : Determine whether bishop's move is valid
 ***********************************************************/
-bool PieceMove::fn_bshpMv(Chess *cp) 
+bool PieceMove::bshpMove(Chess *cp) 
 {
     short sh_x = TO[0] - FROM[0];
     short sh_y = TO[1] - FROM[1];
@@ -338,7 +339,7 @@ bool PieceMove::fn_bshpMv(Chess *cp)
 
     int temp = abs(sh_x)/sh_x;
     int temp2 = abs(sh_y)/sh_y;
-    switch (ch_piece) 
+    switch (piece) 
     {
         case 'b':
             // check if player is trying to capture their own piece
@@ -363,7 +364,7 @@ bool PieceMove::fn_bshpMv(Chess *cp)
     // check if player's piece is jumping over the pieces
     for (int i=2; i<=abs(sh_x)-2; i+=2) 
     {
-        if (cp->cdp_board[FROM[0]+(i*temp)][FROM[1]+(i*temp2)]!=' ') 
+        if (cp->board[FROM[0]+(i*temp)][FROM[1]+(i*temp2)]!=' ') 
         {
             cout << "\tBISHOP: CANNOT GO THROUGH\n";
             return false;
@@ -371,9 +372,9 @@ bool PieceMove::fn_bshpMv(Chess *cp)
     }
 
     // Captured something?
-    if (cp->cdp_board[TO[0]][TO[1]] != ' ')
+    if (cp->board[TO[0]][TO[1]] != ' ')
     {
-        fn_kill(cp, cp->cdp_board[TO[0]][TO[1]]);
+        kill(cp, cp->board[TO[0]][TO[1]]);
     }
 
     return true;
@@ -384,7 +385,7 @@ bool PieceMove::fn_bshpMv(Chess *cp)
 * PARAMETER : Chess
 * PURPOSE   : Determine whether knight's move is valid
 ***********************************************************/
-bool PieceMove::fn_knghtMv(Chess *cp) 
+bool PieceMove::knghtMove(Chess *cp) 
 {
     short sh_x = abs(TO[0] - FROM[0]);
     short sh_y = abs(TO[1] - FROM[1]);
@@ -397,7 +398,7 @@ bool PieceMove::fn_knghtMv(Chess *cp)
         return false;
     }
 
-    switch(ch_piece) 
+    switch(piece) 
     {
         case 'n':
             // check if player is tring to capture their own piece
@@ -420,9 +421,9 @@ bool PieceMove::fn_knghtMv(Chess *cp)
     }
 
     // Captured something?
-    if (cp->cdp_board[TO[0]][TO[1]] != ' ')
+    if (cp->board[TO[0]][TO[1]] != ' ')
     {
-        fn_kill(cp, cp->cdp_board[TO[0]][TO[1]]);
+        kill(cp, cp->board[TO[0]][TO[1]]);
     }
 
     return true;
@@ -433,7 +434,7 @@ bool PieceMove::fn_knghtMv(Chess *cp)
 * PARAMETER : Chess
 * PURPOSE   : Determine whether rook's move is valid
 ***********************************************************/
-bool PieceMove::fn_rookMv(Chess *cp) 
+bool PieceMove::rookMove(Chess *cp) 
 {
     // check if rook is moving diagonally
     if (FROM[0]!=TO[0] && FROM[1]!=TO[1]) 
@@ -442,7 +443,7 @@ bool PieceMove::fn_rookMv(Chess *cp)
         return false;
     }
 
-    switch (ch_piece) 
+    switch (piece) 
     {
         case 'r': // player 2 
             // check if player is trying to capture their own piece
@@ -477,7 +478,7 @@ bool PieceMove::fn_rookMv(Chess *cp)
 
         for (int i=FROM[0]+2; i<=TO[0]-2; i+=2)
         {
-            if (cp->cdp_board[i][FROM[1]]!=' ') 
+            if (cp->board[i][FROM[1]]!=' ') 
             {
                 cout << "\tROOK: CANNOT GO THROUGH\n";
                 return false;
@@ -497,7 +498,7 @@ bool PieceMove::fn_rookMv(Chess *cp)
 
         for (int i=FROM[1]+2; i<=TO[1]-2; i+=2)
         {
-            if (cp->cdp_board[FROM[0]][i]!=' ') 
+            if (cp->board[FROM[0]][i]!=' ') 
             {
                 cout << "\tROOK: CANNOT GO THROUGH\n";
                 return false;
@@ -516,9 +517,9 @@ bool PieceMove::fn_rookMv(Chess *cp)
     }
 
     // Captured somthing?
-    if (cp->cdp_board[TO[0]][TO[1]] != ' ')
+    if (cp->board[TO[0]][TO[1]] != ' ')
     {
-        fn_kill(cp, cp->cdp_board[TO[0]][TO[1]]);
+        kill(cp, cp->board[TO[0]][TO[1]]);
     }
 
     return true;
@@ -530,7 +531,7 @@ bool PieceMove::fn_rookMv(Chess *cp)
 * PURPOSE   : Determine which piece was captured and
 *			   decrease the remaining number of that piece
 ***********************************************************/
-void PieceMove::fn_kill(Chess *cp, char ch) 
+void PieceMove::kill(Chess *cp, char ch) 
 {
     list<pCII >::iterator it;
     switch ((cp->moves.getItems()%2!=0)?2:1 ) 
@@ -540,8 +541,8 @@ void PieceMove::fn_kill(Chess *cp, char ch)
             it = cp->user->st_p2->pcs.begin();
             while (it!=cp->user->st_p2->pcs.end()) 
             {
-                if (it->first==ch&&(it->second.first==cp->crg_to[0]&&
-                            it->second.second==cp->crg_to[1])) 
+                if (it->first==ch&&(it->second.first==cp->move_to[0]&&
+                            it->second.second==cp->move_to[1])) 
                 {
                     if (ch=='k')
                     {
@@ -563,8 +564,8 @@ void PieceMove::fn_kill(Chess *cp, char ch)
             it = cp->user->st_p1->pcs.begin();
             while (it!=cp->user->st_p1->pcs.end()) 
             {
-                if (it->first==ch&&(it->second.first==cp->crg_to[0]&&
-                            it->second.second==cp->crg_to[1])) 
+                if (it->first==ch&&(it->second.first==cp->move_to[0]&&
+                            it->second.second==cp->move_to[1])) 
                 {
                     if (ch=='K')
                     {
