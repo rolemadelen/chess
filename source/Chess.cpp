@@ -51,21 +51,21 @@ Chess::~Chess( void )
     delete [] cdp_board;
     cdp_board = NULL;
 
-    delete usr->st_p1;
-    delete usr->st_p2;
-    delete usr;
+    delete user->st_p1;
+    delete user->st_p2;
+    delete user;
 }
 
 /*********************************************************************
  * RETURN        : void
  * PURPOSE       : Initialize/set all required game data
 **********************************************************************/
-void Chess::chessInit( void ) 
+void Chess::init( void ) 
 {
     // allocate memory to structures
-    usr = new User();
-    usr->st_p1 = new Player();
-    usr->st_p2 = new Computer();
+    user = new User();
+    user->st_p1 = new Player();
+    user->st_p2 = new Computer();
 
     // Allocate memmory to 19x19 charcter array
     cdp_board = new char*[ROW];
@@ -125,51 +125,51 @@ void Chess::chessInit( void )
  * PARAMETER     : bool player1
  * PURPOSE       : validate the player's move and move a piece
 **********************************************************************/
-void Chess::mkMove(bool p1) 
+void Chess::makeMove(bool p1) 
 {
     clear();
     display();
     // Display player's name
     cout << endl << ((p1)?GBLU:RED)
-        << ((p1)?(usr->st_p1->str_name):(usr->st_p2->str_name)) 
+        << ((p1)?(user->st_p1->str_name):(user->st_p2->str_name)) 
         << ": "  << DEF;
     // time how long it takes for a user to make a move
     uint64 begin = GetTimeMs64();
-    getline(cin, usr->str_move);
+    getline(cin, user->str_move);
     uint64 end = GetTimeMs64();
 
     // while user input is invalid
-    while (!isValid(usr->str_move))
+    while (!isValid(user->str_move))
     {
         cout << endl << ((p1)?GBLU:RED)
-            << ((p1)?(usr->st_p1->str_name):(usr->st_p2->str_name)) 
+            << ((p1)?(user->st_p1->str_name):(user->st_p2->str_name)) 
             << ": "  << DEF;
         begin += GetTimeMs64();
-        getline(cin, usr->str_move);
+        getline(cin, user->str_move);
         end += GetTimeMs64();
     }
 
     // player resigns
-    if ((usr->str_move).compare("resign")==0) 
+    if ((user->str_move).compare("resign")==0) 
     {
-        ((p1)?(usr->st_p1->b_alive):(usr->st_p2->b_alive)) = false;
+        ((p1)?(user->st_p1->b_alive):(user->st_p2->b_alive)) = false;
         return;
     }
     // record moves
-    stck_mv.push_back(usr->str_move);
+    moves.push_back(user->str_move);
     // record times
-    usr->vf_tmPerMv.push_back((end-begin)/1000.0f);
+    user->vf_tmPerMv.push_back((end-begin)/1000.0f);
 
     //  move selected piece
-    t_it it = ((p1)?(usr->st_p1->pcs.begin()):(usr->st_p2->pcs.begin()));
-    while (it!=((p1)?(usr->st_p1->pcs.end()):(usr->st_p2->pcs.end()))) 
+    t_it it = ((p1)?(user->st_p1->pcs.begin()):(user->st_p2->pcs.begin()));
+    while (it!=((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end()))) 
     {
         if (it->second.first==crg_from[0] && it->second.second==crg_from[1]) 
         {
             it->second.first = crg_to[0];
             it->second.second = crg_to[1];
             cdp_board[crg_from[0]][crg_from[1]] = ' ';
-            it = ((p1)?(usr->st_p1->pcs.end()):(usr->st_p2->pcs.end())); 
+            it = ((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end())); 
             return;
         }
         ++it;
@@ -181,7 +181,7 @@ void Chess::mkMove(bool p1)
  * PARAMETER     : bool p1
  * PURPOSE       : validate the piece's movement && perform promotion
  **********************************************************************/
-bool Chess::chckMove( bool p1 ) 
+bool Chess::checkMove( bool p1 ) 
 {
     PieceMove chkMv;
     // check if p2 selected p1's piece or vice versa
@@ -220,14 +220,14 @@ bool Chess::chckMove( bool p1 )
         } 
 
         // Promote the pawn to a desired piece
-        t_it it = (p1)?(usr->st_p1->pcs.begin()):(usr->st_p2->pcs.begin());
-        while (it!=((p1)?(usr->st_p1->pcs.end()):(usr->st_p2->pcs.end()))) 
+        t_it it = (p1)?(user->st_p1->pcs.begin()):(user->st_p2->pcs.begin());
+        while (it!=((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end()))) 
         {
             if (it->first==((p1)?'P':'p')&&(it->second.first==crg_from[0]&&
                         it->second.second==crg_from[1])) 
             {
                 it->first = promo;
-                it = ((p1)?(usr->st_p1->pcs.end()):(usr->st_p2->pcs.end()));
+                it = ((p1)?(user->st_p1->pcs.end()):(user->st_p2->pcs.end()));
             }
             ++it;
         } 
@@ -263,7 +263,7 @@ bool Chess::isValid( string &str )
     // player views the previous movement
     if (str.compare("prev")==0) 
     {
-        cout << " Previous move: " << stck_mv.peek() << endl;
+        cout << " Previous move: " << moves.peek() << endl;
         return false;
     }
     // a2toa3 -> size should be 6
@@ -311,12 +311,12 @@ bool Chess::isValid( string &str )
     }
 
     //PieceMove chkMv;
-    switch ((stck_mv.getItems()%2!=0) ? 0 : 1) 
+    switch ((moves.getItems()%2!=0) ? 0 : 1) 
     {
         case 1: 
-            return chckMove(true); // player 1
+            return checkMove(true); // player 1
         case 0: 
-            return chckMove(false); // player 2
+            return checkMove(false); // player 2
     } // end switch 
 
     return true;
@@ -333,13 +333,13 @@ void Chess::gameover()
     cout << endl;
 
     // Display the winner
-    if (usr->st_p1->b_alive) 
+    if (user->st_p1->b_alive) 
     {
-        cout << GBLU << usr->st_p1->str_name << " WON !!" << DEF << endl;
+        cout << GBLU << user->st_p1->str_name << " WON !!" << DEF << endl;
     }
     else 
     {
-        cout << RED << usr->st_p2->str_name << " WON !!" << DEF << endl;
+        cout << RED << user->st_p2->str_name << " WON !!" << DEF << endl;
     }
 
     // Display all the moves if user wants to
@@ -350,12 +350,12 @@ void Chess::gameover()
 
     if (tolower(temp)=='y') 
     {
-        for (int i=stck_mv.getItems(),j=usr->vf_tmPerMv.size()-1; i>0; --i,--j) 
+        for (int i=moves.getItems(),j=user->vf_tmPerMv.size()-1; i>0; --i,--j) 
         {
             cout << " Move #" << i << " - " << ((i%2!=0)?GBLU:RED);
             cout << "Player " << ((i%2!=0)?1:2) 
-                << ": " << stck_mv.pop_back() << " - "
-                << "took " << usr->vf_tmPerMv[j] << " seconds to move "
+                << ": " << moves.pop_back() << " - "
+                << "took " << user->vf_tmPerMv[j] << " seconds to move "
                 << DEF << endl;
         }
         cout << endl;
@@ -366,29 +366,29 @@ void Chess::gameover()
     }
 
     // sum up player's total spent time moving pieces
-    for (int i=usr->vf_tmPerMv.size()-1; i>0; --i) 
+    for (int i=user->vf_tmPerMv.size()-1; i>0; --i) 
     {
         if (i%2==0)
         {
-            usr->st_p1->f_ttlTm+=usr->vf_tmPerMv[i];
+            user->st_p1->f_ttlTm+=user->vf_tmPerMv[i];
         }
         else 
         {
-            usr->st_p2->f_ttlTm+=usr->vf_tmPerMv[i];
+            user->st_p2->f_ttlTm+=user->vf_tmPerMv[i];
         }
     }
 
     // sort then display fastest and slowest time
-    if (usr->vf_tmPerMv.size())
+    if (user->vf_tmPerMv.size())
     {
-        sort(usr->vf_tmPerMv.begin(), usr->vf_tmPerMv.end());
+        sort(user->vf_tmPerMv.begin(), user->vf_tmPerMv.end());
         cout << " Fastest time took to move a piece: "
-            << usr->vf_tmPerMv[0] << " seconds\n";
+            << user->vf_tmPerMv[0] << " seconds\n";
         cout << " Slowest time took to move a piece: "
-            << usr->vf_tmPerMv[usr->vf_tmPerMv.size()-1] << " seconds\n\n";
+            << user->vf_tmPerMv[user->vf_tmPerMv.size()-1] << " seconds\n\n";
     }
 
-    scrBoard( false );
+    scoreboard( false );
 }
 
 /**********************************************************************
@@ -399,23 +399,23 @@ void Chess::playGame( void )
 {
     clear();
     cout << "Name of player1: ";
-    cin >> usr->st_p1->str_name;
+    cin >> user->st_p1->str_name;
     cout << "Name of player2: ";
-    cin >> usr->st_p2->str_name;
+    cin >> user->st_p2->str_name;
     cin.ignore();
 
     // player turn
     bool pTurn = true; 
-    while (usr->st_p1->b_alive&&usr->st_p2->b_alive) 
+    while (user->st_p1->b_alive&&user->st_p2->b_alive) 
     {
         if(pTurn) 
         { 
-            mkMove(true); 
+            makeMove(true); 
             pTurn = false; 
         }
         else  
         { 
-            mkMove(false); 
+            makeMove(false); 
             pTurn = true; 
         }
     }
@@ -429,7 +429,7 @@ void Chess::playGame( void )
  ********************************************************************/
 void Chess::display( void ) 
 {
-    drawPcs();
+    drawPieces();
     status();
 
     // display the board
@@ -457,16 +457,16 @@ void Chess::display( void )
  * RETURN        : void
  * PURPOSE       : locate each chess pieces on the grid
  *********************************************************************/
-void Chess::drawPcs( void ) 
+void Chess::drawPieces( void ) 
 {
-    t_it it = usr->st_p1->pcs.begin();
-    while (it!=usr->st_p1->pcs.end())
+    t_it it = user->st_p1->pcs.begin();
+    while (it!=user->st_p1->pcs.end())
     {
         cdp_board[it->second.first][it->second.second] = (it++)->first;
     }
 
-    it = usr->st_p2->pcs.begin();
-    while (it!=usr->st_p2->pcs.end())
+    it = user->st_p2->pcs.begin();
+    while (it!=user->st_p2->pcs.end())
     {
         cdp_board[it->second.first][it->second.second] = (it++)->first;
     }
@@ -491,16 +491,16 @@ void Chess::clear( void )
 void Chess::status( void ) 
 {
     // sort captured pieces
-    sort(usr->st_p1->vc_capture.begin(), usr->st_p1->vc_capture.end());
-    sort(usr->st_p2->vc_capture.begin(), usr->st_p2->vc_capture.end());
+    sort(user->st_p1->vc_capture.begin(), user->st_p1->vc_capture.end());
+    sort(user->st_p2->vc_capture.begin(), user->st_p2->vc_capture.end());
 
     // Display Captured pieces
     cout << endl << HEADER << endl;
     cout << " Captured piece(s): " << endl;
     cout << GBLU << " Player 1 :" << DEF << "\n\t"; 
-    for (int i=0; i<usr->st_p1->vc_capture.size(); ++i) 
+    for (int i=0; i<user->st_p1->vc_capture.size(); ++i) 
     {
-        cout << RED << usr->st_p1->vc_capture[i] << DEF << ' ';
+        cout << RED << user->st_p1->vc_capture[i] << DEF << ' ';
         if ((i+1)%8==0)
         {
             cout << "\n\t";
@@ -508,9 +508,9 @@ void Chess::status( void )
     }
     cout << endl << endl;
     cout << RED << " Player 2 :" << DEF << "\n\t"; 
-    for (int i=0; i<usr->st_p2->vc_capture.size(); ++i)
+    for (int i=0; i<user->st_p2->vc_capture.size(); ++i)
     {
-        cout << GBLU << usr->st_p2->vc_capture[i] << DEF << ' ';
+        cout << GBLU << user->st_p2->vc_capture[i] << DEF << ' ';
         if ((i+1)%8==0) 
         {
             cout << "\n\t";
@@ -535,7 +535,7 @@ void Chess::status( void )
  * PURPOSE       : if true, only display data w/o writing to a file
  *					else only save data to the file w/o displaying
  *********************************************************************/
-void Chess::scrBoard( bool print ) 
+void Chess::scoreboard( bool print ) 
 {	
     map<float, string> mymap; // <ttlTime,name>
     map<float, string>::iterator it;
@@ -571,13 +571,13 @@ void Chess::scrBoard( bool print )
     }
 
     // add new winner and winner's time to the map
-    if( usr->st_p1->b_alive ) 
+    if( user->st_p1->b_alive ) 
     {
-        mymap[usr->st_p1->f_ttlTm] = usr->st_p1->str_name;
+        mymap[user->st_p1->f_ttlTm] = user->st_p1->str_name;
     }
     else
     {
-        mymap[usr->st_p2->f_ttlTm] = usr->st_p2->str_name;
+        mymap[user->st_p2->f_ttlTm] = user->st_p2->str_name;
     }
 
     // write data to a file	
@@ -622,7 +622,7 @@ void Chess::menu( void )
                 playGame(); 
                 break;
             case 2: 
-                scrBoard(true); 
+                scoreboard(true); 
                 break;
         }
     } while (n!=1);
