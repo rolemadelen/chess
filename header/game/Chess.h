@@ -21,9 +21,9 @@ class Chess {
         User *user;
         Stack moves;	
 
-        char **cdp_board;  // chess board
-        char crg_from[2];  // move piece location from->to
-        char crg_to[2];
+        char **board;  // chess board
+        char move_from[2];  // move piece location from->to
+        char move_to[2];
 
         // Helper functions;
         void init( void ); // game - body/logic
