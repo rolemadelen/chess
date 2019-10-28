@@ -1,7 +1,7 @@
 /*
-	Author: Jii Myoi
-	Date: 2 May 2016
-	Specification file for the User structure
+Author: Jii Yoo
+Date: 2 May 2016
+Specification file for the User structure
 */
 
 #ifndef USER_H
@@ -16,11 +16,11 @@
 #include "Computer.h"
 
 struct User {
-	Player *st_p1;
-	Computer *st_p2;
+    Player *st_p1;
+    Computer *st_p2;
 
-	vector<float> vf_tmPerMv;
-	string str_move;
+    vector<float> vf_tmPerMv;
+    string str_move;
 };
 
 #endif
