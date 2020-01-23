@@ -22,7 +22,7 @@ Player1: [src] to [dest]
 ```
 
 For example, if *Player1* wants to move a pawn located at `b2` to `b4`, enter
-,```terminal
+```terminal
 Player1: b2 to b4
 ```
 
