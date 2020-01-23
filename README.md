@@ -1,29 +1,28 @@
 ## Text-based Chess
-This project was my final project for C++ Data Structure course I took in 2016 Spring (I believe).
+My final project for C++ Data Structure course (2016).
 
-## Start
-Clone the repository locally: <br />
+## Installation
+Clone the repository:
 ``` bash
 $ git clone https://github.com/jmyoi/Chess
 $ cd Chess
 ```
 
-No install is required. Simply compile all `.cpp`:
+Compule `.cpp` files and run the executable:
 ```bash
 $ cd source
 $ g++ -o chess *.cpp
 $ ./chess
 ```
 
-## How to move a piece
-Moving a piece is straight forward. Enter the *source* (the position of a piece to be moved) and *destination* 
-(the position where you want your piece to be at) following this syntax:
+## How to play
+Use the following syntax to move a piece from one poistion to other.
 ```terminal
 Player1: [src] to [dest]
 ```
 
-If Player1 wants to move a pawn located at `b2` to `b4`, type:
-```terminal
+For example, if *Player1* wants to move a pawn located at `b2` to `b4`, enter
+,```terminal
 Player1: b2 to b4
 ```
 
