@@ -462,13 +462,15 @@ void Chess::drawPieces( void )
     t_it it = user->st_p1->pcs.begin();
     while (it!=user->st_p1->pcs.end())
     {
-        board[it->second.first][it->second.second] = (it++)->first;
+        board[it->second.first][it->second.second] = (it)->first;
+        ++it;
     }
 
     it = user->st_p2->pcs.begin();
     while (it!=user->st_p2->pcs.end())
     {
-        board[it->second.first][it->second.second] = (it++)->first;
+        board[it->second.first][it->second.second] = (it)->first;
+        ++it;
     }
 }
 
