@@ -1,14 +1,20 @@
-## Text-based Chess
-My final project for C++ Data Structure course (2016).
+# TUI Chess
+
+This is my final project for the C++ Data Structure course (2016).
+
+![sample](./chess.gif)
 
 ## Installation
-Clone the repository:
+
+To get started, clone the repository:
+
 ``` bash
-$ git clone https://github.com/jmyoi/Chess
-$ cd Chess
+$ git clone https://github.com/rolemadelen/chess
+$ cd chess
 ```
 
-Compule `.cpp` files and run the executable:
+Compile the `.cpp` files and run the executable:
+
 ```bash
 $ cd source
 $ g++ -o chess *.cpp
@@ -16,16 +22,22 @@ $ ./chess
 ```
 
 ## How to play
-Use the following syntax to move a piece from one poistion to other.
-```terminal
+
+To make a move, use the following syntax to move a piece from one position to another:
+
+```text
 Player1: [src] to [dest]
 ```
 
-For example, if *Player1* wants to move a pawn located at `b2` to `b4`, enter
-```terminal
+For example, if _Player1_ wants to move a pawn located at _b2_ to _b4_, enter the following command:
+
+```text
 Player1: b2 to b4
 ```
 
 ## Commands
-- `resign` : end the game
-- `prev` : display previously done move (or opponents move)
+
+The following commands are available during the game:
+
+- `resign`: End the game and resign.
+- `prev`: Display the previously made move (or the opponent's move).
